@@ -10,19 +10,21 @@ const User = sequelize.define('user',{                    //определени
 
 })        
 
+
+    
+ 
 const Basket = sequelize.define('basket',{                    
     id:{type: DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
-    
-}) 
-const BasketDevice = sequelize.define('basketDevice',{                    
-    id:{type: DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
+    userId:{ type: DataTypes.INTEGER,allowNull: false, onDelete: 'CASCADE' },
+    deviceId:{ type: DataTypes.INTEGER,  allowNull: false,  onDelete: 'CASCADE' },
+
     
 }) 
 const Device = sequelize.define('device',{                    
     id:{type: DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
     name:{type: DataTypes.STRING,unique:true,allowNull:false},
     price:{type: DataTypes.INTEGER,allowNull:false},
-    rating:{type: DataTypes.INTEGER,unique:true,defaultValue:0},
+    rating:{type: DataTypes.INTEGER,defaultValue:0},
     img:{type: DataTypes.STRING,allowNull:false},
 }) 
 const Type = sequelize.define('type',{                    
@@ -49,46 +51,47 @@ const DeviceInfo = sequelize.define('device_info',{
 
 const TypeBrand = sequelize.define('type_brand',{
     id:{type: DataTypes.INTEGER,primaryKey:true,autoIncrement:true},
+
 })
 
-User.hasOne(Basket)
+
+
+User.hasMany(Basket)
 Basket.belongsTo(User)
+
 
 User.hasMany(Rating)
 Rating.belongsTo(User)
 
-Basket.hasMany(BasketDevice)
-BasketDevice.belongsTo(Basket)
 
-Type.hasMany(Device)
+Type.hasMany(Device,{ onDelete: 'cascade',onUpdate: 'cascade' })
 Device.belongsTo(Type)
 
-Brand.hasMany(Device)
+Brand.hasMany(Device,{ onDelete: 'cascade',onUpdate: 'cascade' })
 Device.belongsTo(Brand)
 
 Device.hasMany(Rating)
 Rating.belongsTo(Device)
 
-Device.hasMany(BasketDevice)
-BasketDevice.belongsTo(Device)
-
-Device.hasMany(DeviceInfo)
+Device.hasMany(DeviceInfo, {as: 'info',onDelete: 'cascade',onUpdate: 'cascade' });
 DeviceInfo.belongsTo(Device)
 
-Type.belongsToMany(Brand,{through:TypeBrand})
-Brand.belongsToMany(Type,{through:TypeBrand})
+Device.hasMany(Basket,{ onDelete: 'cascade',onUpdate: 'cascade' })
+Basket.belongsTo(Device)
 
+Type.belongsToMany(Brand, {through: TypeBrand })
+Brand.belongsToMany(Type, {through: TypeBrand })
 
-module.exports =  {
+module.exports =
+{
     User,
     Basket,
-    BasketDevice,
     Device,
     Type,
     Brand,
     Rating,
-    TypeBrand,
-    DeviceInfo
+    DeviceInfo,
+    TypeBrand
 }
 
 
